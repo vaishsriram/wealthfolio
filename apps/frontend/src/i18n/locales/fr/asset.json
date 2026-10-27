@@ -800,6 +800,9 @@
     "recalculate_current_balance": "Solde actuel",
     "recalculate_new_rate": "Nouveau taux annuel (%)",
     "recalculate_confirm": "Recalculer",
+    "change_rate": "Modifier le taux d’intérêt",
+    "change_rate_description": "Enregistrez le nouveau taux fixé par votre prêteur. Les soldes et paiements antérieurs restent inchangés.",
+    "rate_in_effect": "Taux à cette date : {{rate}}",
     "automatic_schedule": "Estimer le solde à partir des paiements",
     "automatic_schedule_description": "Utilise le taux d’intérêt et le calendrier des paiements. Les soldes de relevé que vous saisissez sont prioritaires. Désactivez pour mettre à jour le solde vous-même.",
     "original_terms": "Conditions initiales",
@@ -823,7 +826,9 @@
       "amount_exceeds_balance": "Le remboursement ne peut pas dépasser le solde actuel.",
       "closure_date_invalid": "La clôture doit être comprise entre l'octroi et aujourd'hui.",
       "required": "Obligatoire",
-      "first_payment_after_origination": "Le premier paiement doit suivre la date d’octroi."
+      "first_payment_after_origination": "Le premier paiement doit suivre la date d’octroi.",
+      "payment_positive": "Le paiement doit être supérieur à 0.",
+      "term_too_long": "La durée ne peut pas dépasser 100 ans."
     },
     "accelerated_biweekly": "Aux deux semaines accéléré",
     "first_payment_date": "Date du premier paiement",

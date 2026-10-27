@@ -1,9 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { BASE_URL, completeOnboardingIfNeeded, waitOutLoadingToasts } from "./helpers";
-
-test.beforeEach(async ({ page }) => {
-  await waitOutLoadingToasts(page);
-});
+import { BASE_URL, completeOnboardingIfNeeded } from "./helpers";
 
 test.use({ actionTimeout: 15_000 });
 
@@ -189,6 +185,7 @@ test("active mortgage terms, previous terms and event editing stay consistent", 
     "Confirm balance",
     "Extra Repayment",
     "Renew mortgage",
+    "Change interest rate",
     "Recalculate Schedule",
     "Edit loan details",
     "Close Loan",

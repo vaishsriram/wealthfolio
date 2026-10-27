@@ -8,6 +8,51 @@ and this project adheres to
 
 ### Added
 
+- `Settings.themeId`: the host's theme (Classic, Signature, Ember or Cupertino),
+  absent on hosts without themes. Addon pages get the theme's colours through
+  the host's CSS variables and its `data-theme` attribute on `<html>`, and
+  follow it when the user switches.
+- `chartSliceColor(index)` in `@wealthfolio/ui`: the colour for the item at a
+  position in a composition, the theme's first seven chart colours and then the
+  same seven mixed halfway toward the card. The host's donuts, breakdown lists
+  and allocation strips use it, so an addon chart that does matches them.
+- Chart colours as theme tokens: `--series-1` to `--series-8` for lines and
+  markers compared on one axis (each reaches 3:1 on the page and on cards),
+  `--net-worth`, and `--spending-accent`, `--spending-deep` and
+  `--spending-mid`. The treemap ramps gain `--heatmap-positive-mid` and
+  `--heatmap-negative-mid`.
+
+### Changed
+
+- The component theme tokens (`--button-*`, `--control-*`, `--field-*`,
+  `--switch-*`, `--card-*`, `--popup-*`, `--overlay-*`, `--dialog-radius`,
+  `--sheet-bg`, `--badge-radius`, `--segmented-*`) follow the host's theme;
+  Classic keeps the previous look. `Tabs`' sliding thumb reads
+  `--segmented-thumb`, `--segmented-thumb-image` and `--segmented-thumb-shadow`,
+  and the default `Button` takes its border colour from `--button-border`
+  (transparent in Classic).
+- `DonutChart` gives slices past the seventh the first seven colours again,
+  mixed halfway toward the card, instead of repeating them at full strength, and
+  draws each slice with a 1 px edge in its colour, 15% toward the text colour.
+- Classic's chart colours (`--chart-1` to `--chart-9`) are Flexoki's hues,
+  softened: teal, olive, ochre and clay lead, slate, lavender and rose follow,
+  then two greys. Its treemap ramps (`--heatmap-*`) are soft sage and rose in
+  light mode and Flexoki green and red (50, 200 and 400) in dark. Addon charts
+  that read them change colour in Classic.
+- `spending.searchCashActivities()` returns split amounts as exact decimal
+  strings, preserving replacement evidence without floating-point rounding.
+  Wealthfolio 3.11.0 returned numbers. The existing `string | number` SDK type
+  accepts both; JavaScript consumers must use explicit decimal arithmetic for
+  totals instead of adding raw values with `+`.
+- Activity updates sent through the addon bridge are projected onto the public
+  SDK fields (including the legacy `notes` alias). Native-only controls such as
+  `unlinkTransferPairId` are not forwarded by `update` or `saveMany`;
+  `activities.unlinkTransfer` retains its separate function grant.
+
+## [3.11.0] - 2026-10-22
+
+### Added
+
 - Theme tokens for components: `Button`, `Input`, `Textarea`, `Select`,
   `Toggle`, `Switch`, `Card`, `CardTitle`, `Badge`, `Dialog`, `AlertDialog`,
   `Sheet`, the popups (select, menu, popover, hover card, command, combobox) and
@@ -27,32 +72,6 @@ and this project adheres to
 - `cardSurfaceClassName`, exported with `Card`: the card's surface, border,
   radius and shadow as classes, for an element that must stay something else (a
   link, say) but look like a card.
-- `NetworkRequest.timeoutSecs` for longer-running addon HTTP requests. Defaults
-  to 10 seconds; positive integer values are capped server-side at 120 seconds.
-
-- Optional `ActivityImport.isExternal` boundary override for transfer and credit
-  imports.
-- `ExchangeRatesAPI.getRatesForDates(pairs)` for batched date-specific FX-rate
-  lookups, with per-pair errors and Wealthfolio's standard FX resolution rules.
-- `ctx.api.spending` (`SpendingAPI`) — `isEnabled()`, `getCategories()`,
-  `getRules()`, `saveRule()`, `deleteRule()`, `rerunRules()`, letting addons
-  classify activities into the user's existing spend-category taxonomy via
-  Wealthfolio's categorization-rules engine. Requires a Wealthfolio release that
-  ships this bridge (unreleased at the time of writing). See the
-  [Spend Categorization API reference](../../docs/addons/addon-api-reference.md#spend-categorization-api).
-- `SpendingAPI.getReport()` and `SpendingAPI.searchCashActivities()` for
-  read-only aggregate reports and categorized transaction searches. Transaction
-  search requires the high-risk `activities.searchCashActivities` permission.
-  Reports include `baseCurrency` to identify the currency of all monetary
-  amounts.
-- `registerTranslations()` and `useAddonTranslation()` for translating addon UI
-  strings. Resources live on a dedicated i18next instance inside the addon
-  sandbox, isolated from the host catalog; the language follows the host
-  setting. Requires a Wealthfolio release that ships this sandbox runtime
-  (unreleased at the time of writing). See the
-  [Addon Localization guide](../../docs/addons/addon-localization.md).
-- Optional `status` and `needsReview` fields on `ActivityCreate` and
-  `ActivityUpdate`.
 - `IncomeSummary.unconvertedCurrencies`, the currencies whose income has no
   exchange rate to the summary's currency. Requires a Wealthfolio release that
   ships it (unreleased at the time of writing).
@@ -237,16 +256,11 @@ and this project adheres to
 - **Breaking:** `Autocomplete` is removed; use `Combobox`.
 - In dark mode `--success-subtle-foreground` is green-200, the step the other
   status text colours use, so success text reads green rather than near-white.
-- `ActivityUpdate.asset` now has explicit patch semantics: omit it to preserve
-  the current asset, or pass an empty object to clear the asset association.
-- Host-provided `@wealthfolio/addon-sdk` and `@wealthfolio/ui` dependency ranges
-  are now `^3.8.0`.
 - `IncomeSummary` totals and breakdowns leave out income that has no exchange
   rate to the summary's currency, instead of counting it as if it were already
   in that currency. `byCurrency` still includes it.
 - `IncomeSummary.yoyGrowth` is `null` for `YTD` and `LAST_YEAR` when the year
   before has no income to compare with, instead of `0`.
-
 - `DateRangeSelector` and `IntervalSelector` carry `data-no-swipe-drag`, so on a
   page that switches views with a horizontal swipe, a sideways drag on them
   scrolls their presets instead. On phones `DateRangeSelector` uses the
@@ -263,6 +277,48 @@ The app does not use them; they are removed in the next major SDK version.
   its event keeps the menu open, as with Radix.
 - `ToggleGroup` `type`: `type="single"` takes and returns a string (`""` when
   nothing is pressed) and `type="multiple"` maps to `multiple`.
+
+## [3.9.0] - 2026-09-27
+
+### Added
+
+- `NetworkRequest.timeoutSecs` for longer-running addon HTTP requests. Defaults
+  to 10 seconds; positive integer values are capped server-side at 120 seconds.
+- `SpendingAPI.getReport()` and `SpendingAPI.searchCashActivities()` for
+  read-only aggregate reports and categorized transaction searches. Transaction
+  search requires the high-risk `activities.searchCashActivities` permission.
+  Reports include `baseCurrency` to identify the currency of all monetary
+  amounts.
+
+## [3.8.0] - 2026-09-07
+
+### Added
+
+- Optional `ActivityImport.isExternal` boundary override for transfer and credit
+  imports.
+- `ExchangeRatesAPI.getRatesForDates(pairs)` for batched date-specific FX-rate
+  lookups, with per-pair errors and Wealthfolio's standard FX resolution rules.
+- `ctx.api.spending` (`SpendingAPI`) — `isEnabled()`, `getCategories()`,
+  `getRules()`, `saveRule()`, `deleteRule()`, `rerunRules()`, letting addons
+  classify activities into the user's existing spend-category taxonomy via
+  Wealthfolio's categorization-rules engine. Requires a Wealthfolio release that
+  ships this bridge (unreleased at the time of writing). See the
+  [Spend Categorization API reference](../../docs/addons/addon-api-reference.md#spend-categorization-api).
+- `registerTranslations()` and `useAddonTranslation()` for translating addon UI
+  strings. Resources live on a dedicated i18next instance inside the addon
+  sandbox, isolated from the host catalog; the language follows the host
+  setting. Requires a Wealthfolio release that ships this sandbox runtime
+  (unreleased at the time of writing). See the
+  [Addon Localization guide](../../docs/addons/addon-localization.md).
+- Optional `status` and `needsReview` fields on `ActivityCreate` and
+  `ActivityUpdate`.
+
+### Changed
+
+- `ActivityUpdate.asset` now has explicit patch semantics: omit it to preserve
+  the current asset, or pass an empty object to clear the asset association.
+- Host-provided `@wealthfolio/addon-sdk` and `@wealthfolio/ui` dependency ranges
+  are now `^3.8.0`.
 
 ## [3.7.0] - 2026-08-10
 

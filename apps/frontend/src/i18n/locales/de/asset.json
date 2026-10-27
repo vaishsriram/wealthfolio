@@ -793,6 +793,9 @@
     "recalculate_current_balance": "Aktueller Saldo",
     "recalculate_new_rate": "Neuer Jahreszinssatz (%)",
     "recalculate_confirm": "Neu berechnen",
+    "change_rate": "Zinssatz ändern",
+    "change_rate_description": "Erfassen Sie einen neuen Zinssatz Ihres Kreditgebers. Frühere Salden und Zahlungen bleiben unverändert.",
+    "rate_in_effect": "Zinssatz an diesem Datum: {{rate}}",
     "automatic_schedule": "Saldo aus Zahlungen schätzen",
     "automatic_schedule_description": "Nutzt Zinssatz und Zahlungsplan. Von Ihnen erfasste Kontoauszugssalden haben Vorrang. Deaktivieren Sie die Option, um den Saldo selbst zu pflegen.",
     "original_terms": "Ursprüngliche Konditionen",
@@ -815,7 +818,9 @@
       "amount_exceeds_balance": "Die Rückzahlung darf den aktuellen Saldo nicht überschreiten.",
       "closure_date_invalid": "Das Abschlussdatum muss zwischen Auszahlung und heute liegen.",
       "required": "Erforderlich",
-      "first_payment_after_origination": "Die erste Zahlung muss nach dem Auszahlungsdatum liegen."
+      "first_payment_after_origination": "Die erste Zahlung muss nach dem Auszahlungsdatum liegen.",
+      "payment_positive": "Die Zahlung muss größer als 0 sein.",
+      "term_too_long": "Die Laufzeit darf höchstens 100 Jahre betragen."
     },
     "accelerated_biweekly": "Beschleunigt zweiwöchentlich",
     "first_payment_date": "Erster Zahlungstermin",

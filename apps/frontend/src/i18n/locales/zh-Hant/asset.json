@@ -793,6 +793,9 @@
     "recalculate_current_balance": "目前餘額",
     "recalculate_new_rate": "新年利率 (%)",
     "recalculate_confirm": "重新計算",
+    "change_rate": "變更利率",
+    "change_rate_description": "記錄貸款機構通知的新利率。先前的餘額與還款維持不變。",
+    "rate_in_effect": "該日期的利率：{{rate}}",
     "automatic_schedule": "依還款估算餘額",
     "automatic_schedule_description": "使用利率與還款排程。您輸入的對帳單餘額優先。關閉後由您自行更新餘額。",
     "original_terms": "原始條件",
@@ -815,7 +818,9 @@
       "amount_exceeds_balance": "還款金額不能超過目前餘額。",
       "closure_date_invalid": "結清日期必須在貸款發放日至今天之間。",
       "required": "必填",
-      "first_payment_after_origination": "首次還款日期必須晚於撥款日期。"
+      "first_payment_after_origination": "首次還款日期必須晚於撥款日期。",
+      "payment_positive": "還款額必須大於 0。",
+      "term_too_long": "期限不能超過 100 年。"
     },
     "accelerated_biweekly": "加速雙週還款",
     "first_payment_date": "首次還款日期",

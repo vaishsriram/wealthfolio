@@ -800,6 +800,9 @@
     "recalculate_current_balance": "Saldo attuale",
     "recalculate_new_rate": "Nuovo tasso annuo (%)",
     "recalculate_confirm": "Ricalcola",
+    "change_rate": "Modifica tasso di interesse",
+    "change_rate_description": "Registra il nuovo tasso comunicato dal tuo finanziatore. I saldi e i pagamenti precedenti restano invariati.",
+    "rate_in_effect": "Tasso in questa data: {{rate}}",
     "automatic_schedule": "Stima il saldo dai pagamenti",
     "automatic_schedule_description": "Usa il tasso di interesse e il piano dei pagamenti. I saldi degli estratti conto che inserisci hanno la priorità. Disattiva per aggiornare il saldo manualmente.",
     "original_terms": "Condizioni originali",
@@ -823,7 +826,9 @@
       "amount_exceeds_balance": "Il rimborso non può superare il saldo corrente.",
       "closure_date_invalid": "La data di chiusura deve essere compresa tra l'erogazione e oggi.",
       "required": "Obbligatorio",
-      "first_payment_after_origination": "Il primo pagamento deve essere successivo alla data di erogazione."
+      "first_payment_after_origination": "Il primo pagamento deve essere successivo alla data di erogazione.",
+      "payment_positive": "Il pagamento deve essere maggiore di 0.",
+      "term_too_long": "La durata non può superare 100 anni."
     },
     "accelerated_biweekly": "Ogni due settimane accelerato",
     "first_payment_date": "Data del primo pagamento",

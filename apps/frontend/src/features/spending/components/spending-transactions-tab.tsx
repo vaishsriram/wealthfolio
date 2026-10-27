@@ -19,12 +19,16 @@ import { localizeActivityTypeName } from "@/lib/activity-utils";
 import { generateId } from "@/lib/id";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useIsMobileViewport } from "@/hooks/use-platform";
-import { useVirtualScrollContainer } from "@/hooks/use-virtual-scroll-container";
+import {
+  observeCurrentScrollOffset,
+  useVirtualScrollContainer,
+} from "@/hooks/use-virtual-scroll-container";
+import { useHorizontalOverflow } from "@/hooks/use-horizontal-overflow";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { InfiniteScrollTrigger } from "@/components/infinite-scroll-trigger";
 import { useTaxonomy } from "@/hooks/use-taxonomies";
 import { QueryKeys } from "@/lib/query-keys";
-import { formatDateISO } from "@/lib/utils";
+import { cn, formatDateISO } from "@/lib/utils";
 import type { Account, ActivityDetails, TaxonomyCategory } from "@/lib/types";
 import { useSettingsContext } from "@/lib/settings-provider";
 
@@ -48,6 +52,7 @@ import {
 } from "@wealthfolio/ui";
 
 import { CashActivityForm } from "./cash-activity-form";
+import { isActivityEditCancelled, useActivitySplitReview } from "./activity-split-review-provider";
 import { ActivityForm } from "@/pages/activity/components/activity-form";
 import { MobileActivityForm } from "@/pages/activity/components/mobile-forms/mobile-activity-form";
 import { TransferMatchDialog } from "@/pages/activity/components/transfer-match-dialog";
@@ -99,6 +104,7 @@ import { invalidateSpendingCaches } from "../lib/invalidation";
 import type {
   CashActivitySearchRequest,
   CashActivityStatusFilter,
+  ActivitySplit,
   NewActivitySplit,
 } from "../types/cash-activity";
 
@@ -236,6 +242,7 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
     const urlAmountMax = searchParams.get("amountMax");
 
     const qc = useQueryClient();
+    const reviewEdits = useActivitySplitReview();
     const { settings } = useSettingsContext();
     const appTimezone = settings?.timezone?.trim() || undefined;
     const applyingUrlParamsRef = useRef(false);
@@ -676,17 +683,20 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
     const markReimbursementMutation = useMutation({
       mutationFn: async (row: TransactionRowVM) => {
         const a = row.activity;
-        return updateActivity({
-          id: a.id,
-          accountId: a.accountId,
-          activityType: "CREDIT",
-          subtype: "REIMBURSEMENT",
-          activityDate: a.activityDate,
-          amount: Math.abs(Number.parseFloat(a.amount ?? "0")),
-          currency: a.currency,
-          comment: a.notes ?? null,
-          metadata: cashActivityFlowMetadata("CREDIT", "REIMBURSEMENT", a.metadata),
-        });
+        const [reviewed] = await reviewEdits([
+          {
+            id: a.id,
+            accountId: a.accountId,
+            activityType: "CREDIT",
+            subtype: "REIMBURSEMENT",
+            activityDate: a.activityDate,
+            amount: Math.abs(Number.parseFloat(a.amount ?? "0")),
+            currency: a.currency,
+            comment: a.notes ?? null,
+            metadata: cashActivityFlowMetadata("CREDIT", "REIMBURSEMENT", a.metadata),
+          },
+        ]);
+        return updateActivity(reviewed);
       },
       onSuccess: (_, row) => {
         invalidateSpendingCaches(qc);
@@ -707,7 +717,10 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
         setShowForm(true);
         toast.success(t("spending:txTab.markedReimbursement"));
       },
-      onError: () => toast.error(t("spending:txTab.markReimbursementFailed")),
+      onError: (error) => {
+        if (!isActivityEditCancelled(error))
+          toast.error(t("spending:txTab.markReimbursementFailed"));
+      },
     });
 
     const deleteMutation = useMutation({
@@ -734,17 +747,22 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
       async (taxonomyId: string, categoryId: string) => {
         const ids = Array.from(selectedRowIds);
         if (ids.length === 0) return;
+        if (rows.some((row) => selectedRowIds.has(row.activity.id) && row.splitCount > 0)) {
+          toast.error(t("spending:split.categoryProtected"));
+          return;
+        }
         try {
           const result = await bulkAssignMutation.mutateAsync(
             ids.map((activityId) => ({ activityId, taxonomyId, categoryId })),
           );
           toast.success(t("spending:txTab.categorizedCount", { count: result.length }));
+          setSelectedRowIds(new Set());
         } catch {
           // Hook already toasts on error.
         }
-        setSelectedRowIds(new Set());
+        // Keep the selection on conflict so the user can review a corrected batch.
       },
-      [selectedRowIds, bulkAssignMutation, t],
+      [selectedRowIds, rows, bulkAssignMutation, t],
     );
 
     const handleBulkSetEvent = useCallback(
@@ -799,6 +817,20 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
         toast.success(t("spending:txTab.splitSaved"));
       },
       [replaceSplitsMutation, t],
+    );
+    const handleReplaceSplitsWithCategory = useCallback(
+      async (
+        activityId: string,
+        taxonomyId: string,
+        categoryId: string,
+        expectedSplits: ActivitySplit[],
+      ) => {
+        await bulkAssignMutation.mutateAsync([
+          { activityId, taxonomyId, categoryId, expectedSplits },
+        ]);
+        toast.success(t("spending:txTab.categorizedCount", { count: 1 }));
+      },
+      [bulkAssignMutation, t],
     );
     const handleClearSplits = useCallback(
       async (activityId: string) => {
@@ -966,6 +998,9 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
     // card list scrolls inside its swipeable pane — so both sit below a filter
     // bar whose height the virtualizer has to offset by.
     const { listRef, scrollElement, scrollMargin } = useVirtualScrollContainer();
+    const [tableBox, setTableBox] = useState<HTMLDivElement | null>(null);
+    const [tableElement, setTableElement] = useState<HTMLTableElement | null>(null);
+    const scrollsSideways = useHorizontalOverflow(tableBox, tableElement);
 
     /**
      * Keyed by activity rather than index, so a row keeps its measured height
@@ -983,6 +1018,7 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
     const virtualizer = useVirtualizer({
       count: listItems.length,
       getScrollElement: () => scrollElement,
+      observeElementOffset: observeCurrentScrollOffset,
       estimateSize: (index) => {
         const isHeader = listItems[index]?.kind === "header";
         if (isMobile) return isHeader ? MOBILE_HEADING_HEIGHT : MOBILE_CARD_HEIGHT;
@@ -1272,12 +1308,19 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
           // Row checkboxes show on hover or focus until something is selected,
           // then on every row; `data-selecting` is what switches them on.
           <Card
-            className="group/list overflow-clip"
+            ref={setTableBox}
+            data-virtual-scroll-parent
+            className={cn("group/list", scrollsSideways ? "overflow-auto" : "overflow-clip")}
             data-selecting={selectedRowIds.size > 0 || undefined}
             style={{ overflowAnchor: "none" }}
           >
-            <Table>
-              <TableHeader>
+            <Table ref={setTableElement} containerClassName="overflow-visible">
+              <TableHeader
+                className={cn(
+                  "bg-card sticky top-0 z-10 [&_th]:shadow-[inset_0_-1px_0_var(--color-border)] [&_tr]:border-b-0",
+                  !scrollsSideways && "[@media(width>1024px)]:top-[var(--page-header-height,0px)]",
+                )}
+              >
                 <TableRow>
                   {/* Select-all stays visible: with the row boxes hidden at
                       rest, it is what shows the list can be selected. */}
@@ -1333,12 +1376,17 @@ export const SpendingTransactionsTab = forwardRef<SpendingTransactionsTabHandle>
           open={!!splittingActivity}
           row={splittingActivity}
           categories={allCategories}
-          isSaving={replaceSplitsMutation.isPending || clearSplitsMutation.isPending}
+          isSaving={
+            replaceSplitsMutation.isPending ||
+            clearSplitsMutation.isPending ||
+            bulkAssignMutation.isPending
+          }
           onOpenChange={(open) => {
             if (!open) setSplittingActivity(null);
           }}
           onSave={handleSaveSplits}
           onClear={handleClearSplits}
+          onReplace={handleReplaceSplitsWithCategory}
         />
 
         {showTransferForm &&

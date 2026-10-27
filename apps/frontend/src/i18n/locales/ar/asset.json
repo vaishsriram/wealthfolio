@@ -448,6 +448,9 @@
     "payment_unchanged": "الإبقاء على الدفعة الحالية",
     "payments": "الدفعات",
     "recalculate_confirm": "إعادة الحساب",
+    "change_rate": "تغيير سعر الفائدة",
+    "change_rate_description": "سجّل السعر الجديد الذي حدّده المُقرض. تبقى الأرصدة والدفعات السابقة كما هي.",
+    "rate_in_effect": "السعر في هذا التاريخ: {{rate}}",
     "recalculate_current_balance": "الرصيد الحالي",
     "recalculate_description": "إعادة احتساب الدفعات المستقبلية انطلاقًا من الرصيد الحالي والمعدل.",
     "recalculate_new_rate": "معدل الفائدة السنوي الجديد (%)",
@@ -467,6 +470,8 @@
       "amount_exceeds_balance": "لا يمكن أن يتجاوز السداد الرصيد الحالي.",
       "closure_date_invalid": "يجب أن يكون تاريخ الإغلاق بين تاريخ الإنشاء واليوم.",
       "first_payment_after_origination": "يجب أن تكون الدفعة الأولى بعد تاريخ الإنشاء.",
+      "payment_positive": "يجب أن تكون الدفعة أكبر من 0.",
+      "term_too_long": "لا يمكن أن تتجاوز المدة 100 سنة.",
       "required": "مطلوب"
     },
     "years": "السنوات",

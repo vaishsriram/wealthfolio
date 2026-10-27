@@ -29,7 +29,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { observeElementOffset, useVirtualizer } from "@tanstack/react-virtual";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   AmountDisplay,
   Button,
@@ -68,7 +68,10 @@ import { InfiniteScrollTrigger } from "@/components/infinite-scroll-trigger";
 import { useBalancePrivacy } from "@/hooks/use-balance-privacy";
 import { useHorizontalOverflow } from "@/hooks/use-horizontal-overflow";
 import { usePersistentState } from "@/hooks/use-persistent-state";
-import { useVirtualScrollContainer } from "@/hooks/use-virtual-scroll-container";
+import {
+  observeCurrentScrollOffset,
+  useVirtualScrollContainer,
+} from "@/hooks/use-virtual-scroll-container";
 import { useActivityMutations } from "../../hooks/use-activity-mutations";
 import { ActivityOperations } from "../activity-operations";
 import { ActivityTypeBadge } from "../activity-type-badge";
@@ -271,7 +274,7 @@ export const ActivityTable = ({
             : null;
 
           const content = (
-            <div className="max-w-55 flex items-center gap-2">
+            <div className="flex max-w-55 items-center gap-2">
               <TickerAvatar
                 symbol={avatarSymbol}
                 exchangeMic={row.original.exchangeMic}
@@ -343,7 +346,7 @@ export const ActivityTable = ({
               omitSeconds: true,
             });
             return (
-              <span className="text-muted-foreground ms-2 whitespace-nowrap text-xs tabular-nums">
+              <span className="text-muted-foreground ms-2 text-xs whitespace-nowrap tabular-nums">
                 {time}
               </span>
             );
@@ -374,10 +377,10 @@ export const ActivityTable = ({
               : undefined;
 
           return (
-            <div className="flex min-w-0 max-w-40 flex-col items-start gap-1 text-sm">
+            <div className="flex max-w-40 min-w-0 flex-col items-start gap-1 text-sm">
               <ActivityTypeBadge
                 type={activityType as ActivityType}
-                className="whitespace-nowrap text-xs font-normal"
+                className="text-xs font-normal whitespace-nowrap"
               />
               {subtypeLabel && (
                 <span className="text-muted-foreground max-w-full truncate text-xs font-light">
@@ -444,7 +447,7 @@ export const ActivityTable = ({
           }
 
           return (
-            <div className="whitespace-nowrap pe-4 text-end tabular-nums">
+            <div className="pe-4 text-end whitespace-nowrap tabular-nums">
               {isBalanceHidden
                 ? "••••"
                 : typeof quantity === "number"
@@ -490,7 +493,7 @@ export const ActivityTable = ({
           }
           if (activityType === "SPLIT") {
             return (
-              <div className="whitespace-nowrap text-end tabular-nums">
+              <div className="text-end whitespace-nowrap tabular-nums">
                 {formatSplitRatio(Number(amount))}
               </div>
             );
@@ -503,7 +506,7 @@ export const ActivityTable = ({
             (isIncomeActivity(activityType) && !isAssetBackedIncome)
           ) {
             return (
-              <div className="whitespace-nowrap text-end tabular-nums">
+              <div className="text-end whitespace-nowrap tabular-nums">
                 <AmountDisplay
                   value={Number(amount)}
                   currency={currency}
@@ -514,7 +517,7 @@ export const ActivityTable = ({
           }
 
           return (
-            <div className="whitespace-nowrap text-end tabular-nums">
+            <div className="text-end whitespace-nowrap tabular-nums">
               <PriceDisplay value={unitPrice} currency={currency} isHidden={isBalanceHidden} />
             </div>
           );
@@ -545,7 +548,7 @@ export const ActivityTable = ({
               : row.original.accountCurrency || "USD";
 
           return (
-            <div className="whitespace-nowrap text-end tabular-nums">
+            <div className="text-end whitespace-nowrap tabular-nums">
               {activityType === "SPLIT" ? (
                 "-"
               ) : (
@@ -580,7 +583,7 @@ export const ActivityTable = ({
               : row.original.accountCurrency || "USD";
 
           return (
-            <div className="whitespace-nowrap text-end tabular-nums">
+            <div className="text-end whitespace-nowrap tabular-nums">
               {activityType === "SPLIT" ? (
                 "-"
               ) : (
@@ -616,7 +619,7 @@ export const ActivityTable = ({
 
           const displayValue = calculateActivityValue(activity);
           return (
-            <div className="whitespace-nowrap pe-4 text-end font-medium tabular-nums">
+            <div className="pe-4 text-end font-medium whitespace-nowrap tabular-nums">
               <AmountDisplay value={displayValue} currency={currency} isHidden={isBalanceHidden} />
             </div>
           );
@@ -645,7 +648,7 @@ export const ActivityTable = ({
                   return <div className="pe-4 text-end">-</div>;
                 }
                 return (
-                  <div className="whitespace-nowrap pe-4 text-end tabular-nums">
+                  <div className="pe-4 text-end whitespace-nowrap tabular-nums">
                     <AmountDisplay
                       value={Number(cashBalance)}
                       currency={cashBalanceCurrency}
@@ -672,7 +675,7 @@ export const ActivityTable = ({
           const accountName = row.getValue("account");
           const accountCurrency = row.getValue("accountCurrency");
           return (
-            <div className="min-w-37.5 ms-2 flex flex-col">
+            <div className="ms-2 flex min-w-37.5 flex-col">
               <span>
                 <bdi>{String(accountName)}</bdi>
               </span>
@@ -855,10 +858,7 @@ export const ActivityTable = ({
     getScrollElement: () => scrollElement,
     // A tab can mount this table inside an already-scrolled page. Read the
     // current offset before the virtualizer performs its initial scrollTo.
-    observeElementOffset: (instance, onChange) => {
-      onChange(instance.scrollElement?.scrollTop ?? 0, false);
-      return observeElementOffset(instance, onChange);
-    },
+    observeElementOffset: observeCurrentScrollOffset,
     estimateSize: (index) => (listItems[index]?.kind === "header" ? DAY_HEADER_HEIGHT : ROW_HEIGHT),
     getItemKey,
     overscan: OVERSCAN,
@@ -888,17 +888,9 @@ export const ActivityTable = ({
   // the Total column is hidden.
   const cashColumnIndex = visibleColumns.findIndex((column) => column.id === "value");
 
-  if (isLoading) {
-    return (
-      <div className="text-muted-foreground flex h-full items-center justify-center text-sm">
-        {t("activity:table.loading")}
-      </div>
-    );
-  }
-
   const hasRows = tableRows.length > 0;
 
-  if (!hasRows) {
+  if (!hasRows && !isLoading) {
     return (
       <div className="flex h-full flex-col">
         <Empty>
@@ -1003,54 +995,62 @@ export const ActivityTable = ({
               rendered window are stood in for by one spacer row at each end
               and the real rows stay in normal table flow. */}
           <TableBody ref={listRef}>
-            {paddingTop > 0 && (
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={columnCount} className="text-muted-foreground h-32 text-center">
+                  <span role="status">{t("activity:table.loading")}</span>
+                </TableCell>
+              </TableRow>
+            )}
+            {!isLoading && paddingTop > 0 && (
               <TableRow aria-hidden className="hover:bg-transparent">
                 <TableCell colSpan={columnCount} className="p-0" style={{ height: paddingTop }} />
               </TableRow>
             )}
-            {virtualItems.map((virtualItem) => {
-              const listItem = listItems[virtualItem.index];
-              if (!listItem) return null;
-              if (listItem.kind === "header") {
+            {!isLoading &&
+              virtualItems.map((virtualItem) => {
+                const listItem = listItems[virtualItem.index];
+                if (!listItem) return null;
+                if (listItem.kind === "header") {
+                  return (
+                    <ActivityDayHeaderRow
+                      key={virtualItem.key}
+                      ref={virtualizer.measureElement}
+                      data-index={virtualItem.index}
+                      group={listItem.group}
+                      date={listItem.group.items[0].original.date}
+                      isPartial={hasNextPage && listItem.isLastGroup}
+                      columnCount={columnCount}
+                      cashColumnIndex={cashColumnIndex}
+                    />
+                  );
+                }
+                const row = listItem.item;
                 return (
-                  <ActivityDayHeaderRow
+                  <TableRow
                     key={virtualItem.key}
                     ref={virtualizer.measureElement}
                     data-index={virtualItem.index}
-                    group={listItem.group}
-                    date={listItem.group.items[0].original.date}
-                    isPartial={hasNextPage && listItem.isLastGroup}
-                    columnCount={columnCount}
-                    cashColumnIndex={cashColumnIndex}
-                  />
+                    className={cn(
+                      "group/row cursor-pointer",
+                      row.original.needsReview && NEEDS_REVIEW_ROW_CLASS,
+                    )}
+                    onClick={(e) => isRowBodyClick(e) && handleEdit(row.original)}
+                  >
+                    {row.getVisibleCells().map((cell, cellIndex) => (
+                      <TableCell
+                        key={cell.id}
+                        className={cn("px-3 py-2", cellIndex === 0 && "relative")}
+                        data-row-click-ignore={cell.column.id === "actions" || undefined}
+                      >
+                        {cellIndex === 0 && row.original.needsReview && <NeedsReviewStripe />}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
                 );
-              }
-              const row = listItem.item;
-              return (
-                <TableRow
-                  key={virtualItem.key}
-                  ref={virtualizer.measureElement}
-                  data-index={virtualItem.index}
-                  className={cn(
-                    "group/row cursor-pointer",
-                    row.original.needsReview && NEEDS_REVIEW_ROW_CLASS,
-                  )}
-                  onClick={(e) => isRowBodyClick(e) && handleEdit(row.original)}
-                >
-                  {row.getVisibleCells().map((cell, cellIndex) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn("px-3 py-2", cellIndex === 0 && "relative")}
-                      data-row-click-ignore={cell.column.id === "actions" || undefined}
-                    >
-                      {cellIndex === 0 && row.original.needsReview && <NeedsReviewStripe />}
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
-            {paddingBottom > 0 && (
+              })}
+            {!isLoading && paddingBottom > 0 && (
               <TableRow aria-hidden className="hover:bg-transparent">
                 <TableCell
                   colSpan={columnCount}
