@@ -103,7 +103,7 @@ const SPENDING_DASHBOARD_PERIODS: SpendingDashboardPeriod[] = [
   "6M",
   "YTD",
   "1Y",
-  "LAST_YEAR"
+  "LAST_YEAR",
 ];
 
 const DEFAULT_INTERVAL: SpendingDashboardPeriod = "MTD";
@@ -114,7 +114,7 @@ const INTERVAL_DESCRIPTIONS: Record<SpendingDashboardPeriod, string> = {
   "6M": "spending:tabContent.interval6M",
   YTD: "spending:tabContent.intervalYtd",
   "1Y": "spending:tabContent.interval1Y",
-  "LAST_YEAR": "spending:tabContent.intervalLastYear"
+  LAST_YEAR: "spending:tabContent.intervalLastYear",
 };
 
 // The three insights stages, surfaced as a "Dig deeper" strip under Recent
@@ -200,7 +200,7 @@ function spendingIntervalData(code: SpendingDashboardPeriod, timezone?: string |
       case "LAST_YEAR":
         return {
           start: { year: today.year - 1, month: 1, day: 1 },
-          end: { year: today.year - 1, month: 12, day: 31 }
+          end: { year: today.year - 1, month: 12, day: 31 },
         };
     }
   })();

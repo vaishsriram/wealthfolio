@@ -11,10 +11,7 @@ import type { DateRange } from "@/lib/types";
 import { formatDateISO } from "@/lib/utils";
 
 import { usePersistentState } from "@/hooks/use-persistent-state";
-import {
-  useAmountFormatting,
-  useDateFormatting
-} from "@wealthfolio/ui";
+import { useAmountFormatting, useDateFormatting } from "@wealthfolio/ui";
 
 import { CategoryTransactionsSheet } from "../components/reports/category-transactions-sheet";
 import { HeatmapCellSheet } from "../components/reports/heatmap-cell-sheet";

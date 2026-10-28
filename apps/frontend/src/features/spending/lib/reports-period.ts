@@ -20,7 +20,15 @@ import {
 
 export type ReportsPeriod = "MTD" | "LAST_MONTH" | "3M" | "6M" | "YTD" | "1Y" | "LAST_YEAR";
 
-export const REPORTS_PERIODS: ReportsPeriod[] = ["MTD", "LAST_MONTH", "3M", "6M", "YTD", "1Y", "LAST_YEAR"];
+export const REPORTS_PERIODS: ReportsPeriod[] = [
+  "MTD",
+  "LAST_MONTH",
+  "3M",
+  "6M",
+  "YTD",
+  "1Y",
+  "LAST_YEAR",
+];
 
 export const DEFAULT_REPORTS_PERIOD: ReportsPeriod = "MTD";
 
