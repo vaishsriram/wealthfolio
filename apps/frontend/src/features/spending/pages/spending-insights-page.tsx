@@ -335,8 +335,8 @@ export default function SpendingInsightsPage({
   // One server call returns budgets + actuals + uncategorized + prior, all
   // computed against the same window — the math is reconciled by construction.
   const customPriorRange = useMemo(
-    () => (customRange ? comparisonRange(range, "prior", appTimezone) : null),
-    [customRange, range, appTimezone],
+    () => comparisonRange(range, "prior", appTimezone, period),
+    [customRange, range, appTimezone, period],
   );
   const insightRequest = useMemo(
     () => ({
