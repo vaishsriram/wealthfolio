@@ -1001,8 +1001,6 @@
     "uncategorizedReview": "Sem categoria — revisar",
     "uncategorizedImprove": "Sem categoria — revise para melhorar o detalhamento",
     "plusMore": "+ {{count}} mais",
-    "down": "Abaixo",
-    "up": "Acima",
     "aboutSame": "Aproximadamente igual ao período anterior",
     "fromPriorPeriod": "em relação ao período anterior",
     "intervalMtd": "neste mês",
@@ -1110,5 +1108,9 @@
     "removed_one": "Esta alteração removerá {{count}} divisão.",
     "removed_many": "Esta alteração removerá {{count}} divisões.",
     "removed_other": "Esta alteração removerá {{count}} divisões."
+  },
+  "budgetErrors": {
+    "deleteGroup": "Falha ao excluir o grupo de orçamento.",
+    "copyPlan": "Falha ao copiar o plano."
   }
 }

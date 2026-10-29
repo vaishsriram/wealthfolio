@@ -948,8 +948,6 @@
     "uncategorizedReview": "未歸類：請檢查",
     "uncategorizedImprove": "未歸類：檢查後可讓明細更清楚",
     "plusMore": "+ {{count}} 筆",
-    "down": "下降",
-    "up": "上升",
     "aboutSame": "與上一週期基本持平",
     "fromPriorPeriod": "較上一週期",
     "intervalMtd": "本月",
@@ -1051,5 +1049,9 @@
     "confirm": "儲存並刪除拆分",
     "removed_one": "此變更將刪除 {{count}} 個拆分配置。",
     "removed_other": "此變更將刪除 {{count}} 個拆分配置。"
+  },
+  "budgetErrors": {
+    "deleteGroup": "刪除預算群組失敗。",
+    "copyPlan": "複製計畫失敗。"
   }
 }
