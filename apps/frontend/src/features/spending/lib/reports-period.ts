@@ -147,7 +147,7 @@ export function comparisonRange(
   } else {
     // Fallback to day-based subtraction if period is not provided
     const priorEnd = addCalendarDays(startParts, -1);
-    const priorStart = addCalendarDays(priorEnd, range.days - 1);
+    const priorStart = addCalendarDays(priorEnd, -(range.days - 1));
     priorRange = { start: priorStart, end: priorEnd };
   }
 
