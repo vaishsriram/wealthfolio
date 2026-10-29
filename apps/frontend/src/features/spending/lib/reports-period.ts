@@ -52,7 +52,7 @@ export function periodToReportsRange(
 ): ReportsRange {
   const now = new Date();
   const today = getZonedDateParts(now, timezone);
-  const isLeapYear = today.year / 4;
+  const isLeapYear = today.year % 4 == 0;
   const daysToSubtract = isLeapYear ? 366 : 365;
 
   // For MTD/This month we span the full calendar month so "X days left in May"
