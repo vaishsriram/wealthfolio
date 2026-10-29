@@ -950,8 +950,6 @@
     "uncategorizedReview": "Uncategorized — review",
     "uncategorizedImprove": "Uncategorized — review to improve breakdown",
     "plusMore": "+ {{count}} more",
-    "down": "Down",
-    "up": "Up",
     "aboutSame": "About the same as prior period",
     "fromPriorPeriod": "from prior period",
     "intervalMtd": "this month",
@@ -1054,5 +1052,9 @@
     "confirm": "Save and remove splits",
     "removed_one": "This edit will remove {{count}} split allocation.",
     "removed_other": "This edit will remove {{count}} split allocations."
+  },
+  "budgetErrors": {
+    "deleteGroup": "Failed to delete budget group.",
+    "copyPlan": "Failed to copy plan."
   }
 }

@@ -14,10 +14,10 @@ and this project adheres to
   `sourceGroupId`. Both rows go in the same import; a conversion row without its
   other row fails the import. Other rows ignore `sourceGroupId`.
 
-- `Settings.themeId`: the host's theme (Classic, Signature, Ember or Cupertino),
-  absent on hosts without themes. Addon pages get the theme's colours through
-  the host's CSS variables and its `data-theme` attribute on `<html>`, and
-  follow it when the user switches.
+- `Settings.themeId`: the host's theme (Classic, Signature, Ember, Cupertino,
+  Newspaper, Cyber, Terminal or Poster), absent on hosts without themes. Addon
+  pages get the theme's colours through the host's CSS variables and its
+  `data-theme` attribute on `<html>`, and follow it when the user switches.
 - `Settings.textSize`: the host's text size on this device (`small`, `default`,
   `large` or `extra-large`), absent on hosts without it. It scales the root font
   size, so everything an addon sizes in `rem` grows with the host's text; addon
@@ -29,9 +29,9 @@ and this project adheres to
   and allocation strips use it, so an addon chart that does matches them.
 - Chart colours as theme tokens: `--series-1` to `--series-8` for lines and
   markers compared on one axis (each reaches 3:1 on the page and on cards),
-  `--net-worth`, and `--spending-accent`, `--spending-deep` and
-  `--spending-mid`. The treemap ramps gain `--heatmap-positive-mid` and
-  `--heatmap-negative-mid`.
+  `--investments` (the portfolio value line at or above zero), `--net-worth`,
+  and `--spending-accent`, `--spending-deep` and `--spending-mid`. The treemap
+  ramps gain `--heatmap-positive-mid` and `--heatmap-negative-mid`.
 - `Settings.gainColors`: the user's gain and loss colours, `green-up` (the
   default), `red-up` or `red-up-blue-down`, synced across their devices; absent
   on older hosts. The host sets it on `<html>` as `data-gain-colors`, and addon

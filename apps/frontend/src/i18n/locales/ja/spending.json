@@ -942,8 +942,6 @@
     "uncategorizedReview": "未分類 — 要確認",
     "uncategorizedImprove": "未分類 — 確認すると内訳の精度が上がります",
     "plusMore": "+ 他{{count}}件",
-    "down": "減少",
-    "up": "増加",
     "aboutSame": "前期間とほぼ同水準",
     "fromPriorPeriod": "前期間から",
     "intervalMtd": "今月",
@@ -1042,5 +1040,9 @@
     "hiddenCategory": "既存のカテゴリ割り当ては保持され、分割の削除後に適用される場合があります。",
     "confirm": "保存して分割を削除",
     "removed_other": "この変更により {{count}} 件の分割が削除されます。"
+  },
+  "budgetErrors": {
+    "deleteGroup": "予算グループを削除できませんでした。",
+    "copyPlan": "計画をコピーできませんでした。"
   }
 }
