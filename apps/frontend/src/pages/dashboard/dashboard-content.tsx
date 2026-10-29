@@ -198,7 +198,7 @@ export function DashboardContent({
             </PortfolioUpdateTrigger>
             <PrivacyToggle className="hover:bg-muted/50 bg-transparent" />
           </div>
-          <div className="text-md flex min-h-5 items-center space-x-3">
+          <div className="text-md flex min-h-5 flex-wrap items-center gap-x-3">
             {isPortfolioPerformanceLoading ? (
               <div className="flex items-center gap-3">
                 <Skeleton className="h-4 w-24" />
@@ -240,8 +240,8 @@ export function DashboardContent({
         className="flex grow flex-col"
         style={{
           backgroundImage: isNegative
-            ? `linear-gradient(to top, color-mix(in srgb, var(--destructive) 30%, transparent), color-mix(in srgb, var(--destructive) 15%, transparent) 50%, transparent 100%)`
-            : `linear-gradient(to top, color-mix(in srgb, var(--success) 30%, transparent), color-mix(in srgb, var(--success) 15%, transparent) 50%, transparent 100%)`,
+            ? `linear-gradient(to top, color-mix(in srgb, var(--loss) 30%, transparent), color-mix(in srgb, var(--loss) 15%, transparent) 50%, transparent 100%)`
+            : `linear-gradient(to top, color-mix(in srgb, var(--gain) 30%, transparent), color-mix(in srgb, var(--gain) 15%, transparent) 50%, transparent 100%)`,
         }}
       >
         <div className="h-70">
