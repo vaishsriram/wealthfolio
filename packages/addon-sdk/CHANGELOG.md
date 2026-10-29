@@ -4,6 +4,78 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `ActivityImport.sourceGroupId` and `ACTIVITY_SUBTYPES.CONVERSION_OUT` /
+  `CONVERSION_IN`: an import records an in-kind conversion (a fund switch
+  carried at cost) as two ADJUSTMENT rows, one of each subtype, sharing a
+  `sourceGroupId`. Both rows go in the same import; a conversion row without its
+  other row fails the import. Other rows ignore `sourceGroupId`.
+
+- `Settings.themeId`: the host's theme (Classic, Signature, Ember or Cupertino),
+  absent on hosts without themes. Addon pages get the theme's colours through
+  the host's CSS variables and its `data-theme` attribute on `<html>`, and
+  follow it when the user switches.
+- `Settings.textSize`: the host's text size on this device (`small`, `default`,
+  `large` or `extra-large`), absent on hosts without it. It scales the root font
+  size, so everything an addon sizes in `rem` grows with the host's text; addon
+  pages get it as the `data-text-size` attribute on `<html>` and follow it when
+  the user changes it. Sizes in `px` stay as they are.
+- `chartSliceColor(index)` in `@wealthfolio/ui`: the colour for the item at a
+  position in a composition, the theme's first seven chart colours and then the
+  same seven mixed halfway toward the card. The host's donuts, breakdown lists
+  and allocation strips use it, so an addon chart that does matches them.
+- Chart colours as theme tokens: `--series-1` to `--series-8` for lines and
+  markers compared on one axis (each reaches 3:1 on the page and on cards),
+  `--net-worth`, and `--spending-accent`, `--spending-deep` and
+  `--spending-mid`. The treemap ramps gain `--heatmap-positive-mid` and
+  `--heatmap-negative-mid`.
+- `Settings.gainColors`: the user's gain and loss colours, `green-up` (the
+  default), `red-up` or `red-up-blue-down`, synced across their devices; absent
+  on older hosts. The host sets it on `<html>` as `data-gain-colors`, and addon
+  pages get the same attribute.
+- Gain and loss tokens that follow that setting: `--gain` and `--loss`, each
+  with `-subtle`, `-subtle-foreground` and `-subtle-border`, and the treemap's
+  `--heatmap-gain-*` and `--heatmap-loss-*` (`-low`, `-mid`, `-high`). Use them,
+  not `--success` and `--destructive`, for a price or value going up or down.
+  `--loss-blue` and its subtle surface are the true blue that losses take with
+  `red-up-blue-down`, and `--heatmap-blue-*` its treemap ramp.
+
+### Changed
+
+- `GainAmount`, `GainPercent` and `AmountDisplay` (with `colorFormat`) draw with
+  the gain and loss tokens, so they follow the user's gain and loss colours;
+  with the default they look as before.
+- The component theme tokens (`--button-*`, `--control-*`, `--field-*`,
+  `--switch-*`, `--card-*`, `--popup-*`, `--overlay-*`, `--dialog-radius`,
+  `--sheet-bg`, `--badge-radius`, `--segmented-*`) follow the host's theme;
+  Classic keeps the previous look. `Tabs`' sliding thumb reads
+  `--segmented-thumb`, `--segmented-thumb-image` and `--segmented-thumb-shadow`,
+  and the default `Button` takes its border colour from `--button-border`
+  (transparent in Classic).
+- `DonutChart` gives slices past the seventh the first seven colours again,
+  mixed halfway toward the card, instead of repeating them at full strength, and
+  draws each slice with a 1 px edge in its colour, 15% toward the text colour.
+- Classic's chart colours (`--chart-1` to `--chart-9`) are Flexoki's hues,
+  softened: teal, olive, ochre and clay lead, slate, lavender and rose follow,
+  then two greys. Its treemap ramps (`--heatmap-*`) are soft sage and rose in
+  light mode and Flexoki green and red (50, 200 and 400) in dark. Addon charts
+  that read them change colour in Classic.
+- `spending.searchCashActivities()` returns split amounts as exact decimal
+  strings, preserving replacement evidence without floating-point rounding.
+  Wealthfolio 3.11.0 returned numbers. The existing `string | number` SDK type
+  accepts both; JavaScript consumers must use explicit decimal arithmetic for
+  totals instead of adding raw values with `+`.
+- `activities.getTransferPair()` also returns a conversion's two rows:
+  `transferOut` is the CONVERSION_OUT row and `transferIn` the CONVERSION_IN
+  row. Code that expects a transfer should check `activityType`.
+- Activity updates sent through the addon bridge are projected onto the public
+  SDK fields (including the legacy `notes` alias). Native-only controls such as
+  `unlinkTransferPairId` are not forwarded by `update` or `saveMany`;
+  `activities.unlinkTransfer` retains its separate function grant.
+
 ## [3.11.0] - 2026-10-22
 
 ### Added

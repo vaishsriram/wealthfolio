@@ -126,6 +126,7 @@ export default function SaveUpDetailPage({ goal, plan, overview }: Props) {
   const displayProgress = targetAmount > 0 ? Math.min(currentValue / targetAmount, 1) : progress;
   const remainingNow = Math.max(targetAmount - currentValue, 0);
   const isPlanDirty =
+    savePlanMutation.isError ||
     targetAmount !== initialTargetAmount ||
     targetDate !== initialTargetDate ||
     monthlyContribution !== initialMonthlyContribution ||
@@ -144,7 +145,7 @@ export default function SaveUpDetailPage({ goal, plan, overview }: Props) {
     setMonthlyContribution(initialMonthlyContribution);
     setAnnualReturn(initialAnnualReturn);
     // Only sync when persisted values change. Toggling edit mode should not snap drafts back.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
   }, [persistedPlanKey]);
 
   const previewInput = useMemo<SaveUpPreviewInputDTO | null>(
@@ -170,7 +171,7 @@ export default function SaveUpDetailPage({ goal, plan, overview }: Props) {
     ? (previewQuery.data ?? null)
     : (overview ?? null);
 
-  const savePending = savePlanMutation.isPending;
+  const savePending = savePlanMutation.isPending || updateMutation.isPending;
   const actionPending = savePending || previewPending || previewUnavailable;
   const actionPendingLabel = previewUnavailable
     ? t("goals:save_up.preview_failed")
@@ -191,52 +192,53 @@ export default function SaveUpDetailPage({ goal, plan, overview }: Props) {
     }));
   }, [projection, currentValue, targetAmount]);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     const settings: SaveUpPlanSettings = {
       targetDate,
       targetAmount,
       monthlyContribution,
       expectedAnnualReturn: annualReturn,
     };
-
-    savePlanMutation.mutate({
-      goalId: goal.id,
-      planKind: "save_up",
-      settingsJson: JSON.stringify(settings),
-    });
-
-    const prog = targetAmount > 0 ? Math.min(currentValue / targetAmount, 1) : 0;
-    updateMutation.mutate({
-      ...goal,
-      targetAmount: targetAmount || undefined,
-      targetDate: targetDate || undefined,
-      summaryCurrentValue: currentValue,
-      summaryProgress: prog,
-      projectedValueAtTargetDate: projection?.projectedValueAtTargetDate,
-      projectedCompletionDate: projection?.projectedCompletionDate ?? undefined,
-      statusHealth: projection?.health ?? "not_applicable",
-    });
-
-    setIsEditingPlan(false);
+    try {
+      // The final plan-save refresh must see the new goal target as well as plan inputs.
+      await updateMutation.mutateAsync({
+        ...goal,
+        targetAmount: targetAmount || undefined,
+        targetDate: targetDate || null,
+      });
+      await savePlanMutation.mutateAsync({
+        goalId: goal.id,
+        planKind: "save_up",
+        settingsJson: JSON.stringify(settings),
+      });
+      setIsEditingPlan(false);
+    } catch {
+      // Mutation hooks report the error. Keep the draft open, including a partial save.
+    }
   }, [
     goal,
     targetAmount,
     targetDate,
     monthlyContribution,
     annualReturn,
-    currentValue,
-    projection,
     savePlanMutation,
     updateMutation,
   ]);
 
   const handleCancelEdit = useCallback(() => {
+    savePlanMutation.reset();
     setTargetAmount(initialTargetAmount);
     setTargetDate(initialTargetDate);
     setMonthlyContribution(initialMonthlyContribution);
     setAnnualReturn(initialAnnualReturn);
     setIsEditingPlan(false);
-  }, [initialTargetAmount, initialTargetDate, initialMonthlyContribution, initialAnnualReturn]);
+  }, [
+    initialTargetAmount,
+    initialTargetDate,
+    initialMonthlyContribution,
+    initialAnnualReturn,
+    savePlanMutation,
+  ]);
 
   const status = getSaveUpStatus(
     {
@@ -297,7 +299,7 @@ export default function SaveUpDetailPage({ goal, plan, overview }: Props) {
                   >
                     {status.label}
                   </span>
-                  <span className="text-muted-foreground text-xs font-medium uppercase tracking-[0.15em]">
+                  <span className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
                     {t("goals:save_up.savings_plan")}
                   </span>
                 </div>
@@ -642,7 +644,7 @@ function formatGoalDate(
 function HeroMetric({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="min-w-0 px-5 py-4">
-      <div className="text-muted-foreground text-2xs font-semibold uppercase tracking-wider">
+      <div className="text-muted-foreground text-2xs font-semibold tracking-wider uppercase">
         {label}
       </div>
       <div className="mt-2 truncate text-lg font-semibold tabular-nums">{children}</div>
@@ -676,10 +678,10 @@ function MonthlyPlanCallout({
       <CardContent className="p-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0">
-            <div className="text-muted-foreground mb-1 text-xs font-medium uppercase tracking-[0.15em]">
+            <div className="text-muted-foreground mb-1 text-xs font-medium tracking-[0.15em] uppercase">
               {t("goals:save_up.action")}
             </div>
-            <h3 className="text-md font-semibold leading-none tracking-tight">
+            <h3 className="text-md leading-none font-semibold tracking-tight">
               {t("goals:save_up.monthly_plan")}
             </h3>
           </div>
@@ -777,7 +779,7 @@ function SidebarCard({
     <Card>
       <CardHeader className="flex-row items-start justify-between pb-4">
         <div className="min-w-0">
-          <div className="text-muted-foreground mb-1 text-xs font-medium uppercase tracking-[0.15em]">
+          <div className="text-muted-foreground mb-1 text-xs font-medium tracking-[0.15em] uppercase">
             {kicker}
           </div>
           <CardTitle className="text-md leading-none tracking-tight">{title}</CardTitle>
@@ -827,7 +829,7 @@ function DateRow({
     <div className="py-4 first:pt-1 last:pb-1">
       <div className="mb-2 flex items-start justify-between gap-3">
         <div>
-          <div className="text-foreground text-sm font-semibold leading-tight">{label}</div>
+          <div className="text-foreground text-sm leading-tight font-semibold">{label}</div>
           <div className="text-muted-foreground mt-1 text-xs leading-tight">{hint}</div>
         </div>
       </div>

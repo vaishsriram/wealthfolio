@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@wealthfolio/ui/components/
 import { Icons, type Icon } from "@wealthfolio/ui/components/ui/icons";
 import { Skeleton } from "@wealthfolio/ui/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@wealthfolio/ui";
+import { maskAccountNumber } from "@/lib/account-number";
 import type { Account, AccountType, Platform } from "@/lib/types";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -57,12 +58,13 @@ export function AccountItem({
     iconClass: "text-muted-foreground",
   };
   const IconComponent = typeConfig.icon;
+  const maskedNumber = maskAccountNumber(account.accountNumber);
 
   return (
     <div className="flex items-center justify-between p-4">
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-3">
         {/* Avatar with platform logo or account type icon */}
-        <Avatar className="h-10 w-10 rounded-lg">
+        <Avatar className="h-10 w-10 shrink-0 rounded-lg">
           {isSynced && platform?.logoUrl ? (
             <AvatarImage
               src={platform.logoUrl}
@@ -75,7 +77,7 @@ export function AccountItem({
           </AvatarFallback>
         </Avatar>
 
-        <div className="grid gap-1">
+        <div className="grid min-w-0 gap-1">
           <div className="flex items-center gap-2">
             <Link
               to={`/accounts/${account.id}`}
@@ -87,12 +89,20 @@ export function AccountItem({
             </Link>
             {isSynced && <Icons.CloudSync2 className="text-muted-foreground h-3.5 w-3.5" />}
           </div>
-          <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
+          <div className="text-muted-foreground flex flex-wrap items-center gap-x-1.5 text-sm">
             <span>{account.currency}</span>
             {account.group && (
               <>
                 <span>·</span>
                 <span>{account.group}</span>
+              </>
+            )}
+            {maskedNumber && (
+              <>
+                <span>·</span>
+                <span dir="ltr" data-testid="account-item-number">
+                  {maskedNumber}
+                </span>
               </>
             )}
             <span>·</span>
@@ -133,7 +143,7 @@ export function AccountItem({
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         {account.isArchived && (
           <span className="border-destructive-subtle-border bg-destructive-subtle text-destructive-subtle-foreground inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium">
             <Icons.FileArchive className="h-3 w-3" />

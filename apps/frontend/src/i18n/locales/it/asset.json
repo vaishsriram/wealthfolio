@@ -12,7 +12,6 @@
     "more": "Altro"
   },
   "securities": {
-    "heading": "Titoli",
     "subtitle": "Esplora e gestisci i titoli disponibili nel tuo portafoglio.",
     "add_security": "Aggiungi titolo",
     "delete_title": "Elimina titolo",
@@ -69,7 +68,7 @@
       "currency_required": "La valuta è obbligatoria"
     },
     "instrumentType": {
-      "equity": "Azionario (Azioni, ETF, Fondo)",
+      "equity": "Azionario (azioni, ETF, fondo)",
       "crypto": "Criptovaluta",
       "bond": "Obbligazione",
       "option": "Opzione",
@@ -308,7 +307,7 @@
     "data_provider_sheet_description": "Seleziona il provider di dati per questa associazione di simbolo",
     "invalid_mappings_warning": "Alcune associazioni di simbolo non sono state convalidate. I prezzi potrebbero non aggiornarsi per queste voci.",
     "instrumentType": {
-      "equity": "Azionario (Azioni, ETF, Fondo)",
+      "equity": "Azionario (azioni, ETF, fondo)",
       "crypto": "Criptovaluta",
       "bond": "Obbligazione",
       "option": "Opzione",
@@ -826,7 +825,9 @@
       "amount_exceeds_balance": "Il rimborso non può superare il saldo corrente.",
       "closure_date_invalid": "La data di chiusura deve essere compresa tra l'erogazione e oggi.",
       "required": "Obbligatorio",
-      "first_payment_after_origination": "Il primo pagamento deve essere successivo alla data di erogazione."
+      "first_payment_after_origination": "Il primo pagamento deve essere successivo alla data di erogazione.",
+      "payment_positive": "Il pagamento deve essere maggiore di 0.",
+      "term_too_long": "La durata non può superare 100 anni."
     },
     "accelerated_biweekly": "Ogni due settimane accelerato",
     "first_payment_date": "Data del primo pagamento",

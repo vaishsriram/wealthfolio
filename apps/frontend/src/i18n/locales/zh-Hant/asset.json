@@ -12,7 +12,6 @@
     "more": "更多"
   },
   "securities": {
-    "heading": "有價證券",
     "subtitle": "瀏覽與管理你投資組合中可用的有價證券。",
     "add_security": "新增有價證券",
     "delete_title": "刪除有價證券",
@@ -818,7 +817,9 @@
       "amount_exceeds_balance": "還款金額不能超過目前餘額。",
       "closure_date_invalid": "結清日期必須在貸款發放日至今天之間。",
       "required": "必填",
-      "first_payment_after_origination": "首次還款日期必須晚於撥款日期。"
+      "first_payment_after_origination": "首次還款日期必須晚於撥款日期。",
+      "payment_positive": "還款額必須大於 0。",
+      "term_too_long": "期限不能超過 100 年。"
     },
     "accelerated_biweekly": "加速雙週還款",
     "first_payment_date": "首次還款日期",

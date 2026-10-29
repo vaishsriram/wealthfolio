@@ -313,7 +313,7 @@ function ProviderSettings({
             <div className="grid gap-6 md:grid-cols-2">
               {/* Left column - Capabilities */}
               <div className="space-y-4">
-                <h4 className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                <h4 className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                   {t("settings:market_data_page.capabilities")}
                 </h4>
                 <div className="space-y-3">
@@ -387,8 +387,8 @@ function ProviderSettings({
 
               {/* Right column - Settings */}
               <div className="space-y-4">
-                <h4 className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
-                  {t("settings:market_data_page.settings")}
+                <h4 className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                  {t("common:settings")}
                 </h4>
                 <div className="space-y-4">
                   {provider.requiresApiKey && (
@@ -442,7 +442,7 @@ function ProviderSettings({
                           className="h-8"
                           disabled={provider.hasApiKey && !hasLoadedKey}
                         >
-                          {t("settings:common_save")}
+                          {t("common:save")}
                         </Button>
                       </div>
                     </div>
@@ -646,14 +646,14 @@ function CustomProviderCard({
                     variant="ghost"
                     size="icon"
                     className="text-muted-foreground hover:text-destructive h-8 w-8"
-                    aria-label={t("settings:common_delete")}
+                    aria-label={t("common:delete")}
                   />
                 }
               >
                 <Icons.Trash className="h-4 w-4" />
               </PopoverTrigger>
               <PopoverContent className="w-80 space-y-3" align="end">
-                <h4 className="font-medium leading-none">
+                <h4 className="leading-none font-medium">
                   {t("settings:market_data_page.delete_provider_in_use_title", {
                     name: provider.name,
                   })}
@@ -700,15 +700,15 @@ function CustomProviderCard({
               confirmMessage={t("settings:market_data_page.delete_provider_message", {
                 name: provider.name,
               })}
-              confirmButtonText={t("settings:common_delete")}
-              cancelButtonText={t("settings:common_cancel")}
+              confirmButtonText={t("common:delete")}
+              cancelButtonText={t("common:cancel")}
               confirmButtonVariant="destructive"
               button={
                 <Button
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground hover:text-destructive h-8 w-8"
-                  aria-label={t("settings:common_delete")}
+                  aria-label={t("common:delete")}
                 >
                   <Icons.Trash className="h-4 w-4" />
                 </Button>
@@ -761,8 +761,10 @@ export default function MarketDataSettingsPage() {
     () => new Map(customProviders.map((cp) => [cp.id, getCustomProviderUsage(assets, cp.id)])),
     [customProviders, assets],
   );
-  const { mutate: deleteCustomProvider } = useDeleteCustomProvider();
-  const { mutate: updateCustomProvider } = useUpdateCustomProvider();
+  // Each card's busy state comes from its mutation, which knows when it ends
+  // even if that happened while the screen was out of sight.
+  const deleteProvider = useDeleteCustomProvider();
+  const toggleProvider = useUpdateCustomProvider();
 
   const [priorityInputs, setPriorityInputs] = useState<Record<string, number>>({});
   const [resetHistoryOpen, setResetHistoryOpen] = useState(false);
@@ -770,8 +772,6 @@ export default function MarketDataSettingsPage() {
   const [providersTab, setProvidersTab] = useState("builtin");
   const [customFormOpen, setCustomFormOpen] = useState(false);
   const [editingProvider, setEditingProvider] = useState<CustomProviderWithSources | undefined>();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
   const showHealthBanner = searchParams.get("healthContext") === "marketData";
 
   // Split providers into built-in providers and the CUSTOM_SCRAPER aggregate
@@ -834,7 +834,7 @@ export default function MarketDataSettingsPage() {
     return (
       <div className="text-foreground space-y-6">
         <SettingsHeader
-          heading={t("settings:market_data_page.heading")}
+          heading={t("settings:nav.items.market_data")}
           text={t("settings:market_data_page.subtitle")}
         />
         <Separator />
@@ -869,7 +869,7 @@ export default function MarketDataSettingsPage() {
     return (
       <div className="text-foreground space-y-6">
         <SettingsHeader
-          heading={t("settings:market_data_page.heading")}
+          heading={t("settings:nav.items.market_data")}
           text={t("settings:market_data_page.subtitle")}
         />
         <Separator />
@@ -888,7 +888,7 @@ export default function MarketDataSettingsPage() {
                 className="text-foreground"
               >
                 <Icons.Refresh className="me-2 h-4 w-4" />
-                {t("settings:market_data_page.retry")}
+                {t("common:retry")}
               </Button>
             </div>
           </AlertDescription>
@@ -900,7 +900,7 @@ export default function MarketDataSettingsPage() {
   return (
     <div className="text-foreground space-y-6">
       <SettingsHeader
-        heading={t("settings:market_data_page.heading")}
+        heading={t("settings:nav.items.market_data")}
         text={t("settings:market_data_page.subtitle")}
         actionsInline
       >
@@ -995,7 +995,7 @@ export default function MarketDataSettingsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t("settings:common_cancel")}</AlertDialogCancel>
+            <AlertDialogCancel>{t("common:cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={() => recalculatePortfolio()}>
               {t("settings:market_data_page.rebuild_confirm_button")}
             </AlertDialogAction>
@@ -1023,7 +1023,7 @@ export default function MarketDataSettingsPage() {
               )
             }
           >
-            {t("settings:health_banner_clear")}
+            {t("common:clear")}
           </Button>
         </div>
       )}
@@ -1111,7 +1111,7 @@ export default function MarketDataSettingsPage() {
                     msg = msg.slice(bracketMatch[0].length);
                   }
                   return (
-                    <p key={i} className="mt-1 break-all text-xs">
+                    <p key={i} className="mt-1 text-xs break-all">
                       {providerLabel && <span className="font-medium">{providerLabel}: </span>}
                       {msg}
                     </p>
@@ -1141,21 +1141,14 @@ export default function MarketDataSettingsPage() {
                     setEditingProvider(cp);
                     setCustomFormOpen(true);
                   }}
-                  onDelete={() => {
-                    setDeletingId(cp.id);
-                    deleteCustomProvider(cp.id, {
-                      onSettled: () => setDeletingId(null),
-                    });
-                  }}
-                  onToggleEnabled={(enabled) => {
-                    setTogglingId(cp.id);
-                    updateCustomProvider(
-                      { providerId: cp.id, payload: { enabled } },
-                      { onSettled: () => setTogglingId(null) },
-                    );
-                  }}
-                  isDeleting={deletingId === cp.id}
-                  isToggling={togglingId === cp.id}
+                  onDelete={() => deleteProvider.mutate(cp.id)}
+                  onToggleEnabled={(enabled) =>
+                    toggleProvider.mutate({ providerId: cp.id, payload: { enabled } })
+                  }
+                  isDeleting={deleteProvider.isPending && deleteProvider.variables === cp.id}
+                  isToggling={
+                    toggleProvider.isPending && toggleProvider.variables?.providerId === cp.id
+                  }
                   isLast={index === customProviders.length - 1}
                 />
               ))}

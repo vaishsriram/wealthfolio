@@ -50,6 +50,7 @@ import {
   parseDateTimeInTimezone,
   parseLocalizedDecimalString,
 } from "../../lib/formatting";
+import { copyText } from "../../lib/clipboard";
 import { isKeyboardEventComposing } from "../../lib/utils";
 
 const DEFAULT_ROW_HEIGHT = "short";
@@ -613,7 +614,7 @@ function useDataGrid<TData>({
           } else if (value instanceof Date) {
             serializedValue = value.toISOString();
           } else {
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            // oxlint-disable-next-line typescript/no-base-to-string
             serializedValue = String(value ?? "");
           }
 
@@ -650,7 +651,7 @@ function useDataGrid<TData>({
       .join("\n");
 
     try {
-      await navigator.clipboard.writeText(tsvData);
+      await copyText(tsvData);
 
       const currentState = store.getState();
       if (currentState.cutCells.size > 0) {
@@ -707,7 +708,7 @@ function useDataGrid<TData>({
           } else if (value instanceof Date) {
             serializedValue = value.toISOString();
           } else {
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            // oxlint-disable-next-line typescript/no-base-to-string
             serializedValue = String(value ?? "");
           }
 
@@ -744,7 +745,7 @@ function useDataGrid<TData>({
       .join("\n");
 
     try {
-      await navigator.clipboard.writeText(tsvData);
+      await copyText(tsvData);
 
       store.setState("cutCells", new Set(selectedCellsArray));
     } catch (error) {
@@ -1714,7 +1715,7 @@ function useDataGrid<TData>({
           if (!cell) continue;
 
           const value = cell.getValue();
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
+          // oxlint-disable-next-line typescript/no-base-to-string
           const stringValue = String(value ?? "").toLowerCase();
 
           if (stringValue.includes(lowerQuery)) {

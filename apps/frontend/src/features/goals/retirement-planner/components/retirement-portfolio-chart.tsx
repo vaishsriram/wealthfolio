@@ -118,7 +118,7 @@ function RetirementChartTooltip({
   projectedStroke,
 }: {
   active?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   payload?: any[];
   currency: string;
   valueMode: ChartValueMode;
@@ -227,7 +227,7 @@ function RetirementChartTooltip({
         </span>
         <span
           className={`text-xs font-semibold tabular-nums ${
-            point.netChange >= 0 ? "text-success" : "text-destructive"
+            point.netChange >= 0 ? "text-gain" : "text-loss"
           }`}
         >
           {point.netChange >= 0 ? "+" : "-"}

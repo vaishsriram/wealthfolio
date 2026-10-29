@@ -21,6 +21,9 @@
     "nameRequired": "Il nome è obbligatorio",
     "namePlaceholder": "Nome categoria",
     "icon": "Icona",
+    "parent": "Categoria principale",
+    "topLevel": "Nessuna (livello superiore)",
+    "parentLockedByBudget": "Rimuovi prima gli obiettivi di budget di questa categoria. I budget valgono solo per le categorie di livello superiore.",
     "color": "Colore",
     "hex": "Hex",
     "create": "Crea categoria",
@@ -106,6 +109,7 @@
     "selectCategory": "Seleziona una categoria",
     "priorityLabel": "Priorità",
     "priorityHint": "Le regole con priorità più alta vengono controllate per prime (0-100).",
+    "priorityInvalid": "La priorità deve essere un numero intero maggiore o uguale a 0",
     "updateRule": "Aggiorna regola",
     "createRule": "Crea regola",
     "scopeLabel": "Si applica a",
@@ -173,6 +177,7 @@
     "income": "Entrate",
     "spending": "Spese",
     "saving": "Risparmio",
+    "netSaved": "Risparmio netto",
     "net": "Netto"
   },
   "insights": {
@@ -435,6 +440,7 @@
     "customSubtitle": "Transazioni nel periodo selezionato"
   },
   "split": {
+    "staleTaxonomy": "Queste suddivisioni usano un tipo di categoria precedente. Non si applicano più a questa transazione.",
     "title": "Dividi transazione",
     "transactionFallback": "Transazione",
     "remainingOf": "Rimanente di {{amount}}",
@@ -443,7 +449,12 @@
     "removeLine": "Rimuovi riga divisa {{number}}",
     "addLine": "Aggiungi riga",
     "distributeEvenly": "Distribuisci equamente",
-    "clearSplit": "Cancella divisione"
+    "clearSplit": "Cancella divisione",
+    "replaceWithCategory": "Sostituisci le suddivisioni con una categoria",
+    "replaceDescription_one": "Sostituire {{count}} suddivisione con {{category}}? Le suddivisioni esistenti saranno rimosse.",
+    "replaceDescription_other": "Sostituire {{count}} suddivisioni con {{category}}? Le suddivisioni esistenti saranno rimosse.",
+    "replaceDescription_many": "Sostituire {{count}} suddivisioni con {{category}}? Le suddivisioni esistenti saranno rimosse.",
+    "categoryProtected": "Le suddivisioni sono protette. Modificale o sostituiscile esplicitamente nel relativo editor."
   },
   "hierarchy": {
     "noCategorizedSpending": "Nessuna spesa categorizzata in questo periodo.",
@@ -756,8 +767,6 @@
     "overspentBy": "Speso in eccesso del {{pct}}",
     "noIncome": "Nessuna entrata nei conti selezionati per questo periodo.",
     "spent": "Speso",
-    "saved": "Risparmiato",
-    "setAside": "Accantonato",
     "sortSpent": "speso",
     "sortChange": "variazione",
     "sortName": "nome",
@@ -805,6 +814,8 @@
       "total": "Totale",
       "shortfall": "Disavanzo",
       "refunds": "Rimborsi netti",
+      "fromSavings": "Dai risparmi",
+      "toSavings": "Verso i risparmi",
       "surplus": "Residuo",
       "uncategorizedIncome": "Entrate non categorizzate",
       "netSpending": "Spesa netta"
@@ -815,6 +826,7 @@
       "shortfall": "Spese e risparmi oltre quanto è entrato.",
       "refunds": "Categorie in cui i rimborsi hanno superato le spese.",
       "saved": "Trasferito su conti di risparmio e investimento.",
+      "fromSavings": "Prelevato da conti di risparmio e investimento.",
       "surplus": "Entrato, ma non speso né accantonato.",
       "uncategorized": "Spese che non hanno ancora una categoria.",
       "net": "Quanto è costata questa categoria dopo i rimborsi.",
@@ -1090,5 +1102,13 @@
     "overridesTitle_many": "Eccezioni · {{count}}",
     "overridesTitle_other": "Eccezioni · {{count}}",
     "sourceMonth": "Mese di origine"
+  },
+  "splitEditReview": {
+    "title": "Verifica la rimozione delle suddivisioni",
+    "hiddenCategory": "Le categorie esistenti vengono mantenute e possono essere applicate dopo la rimozione delle suddivisioni.",
+    "confirm": "Salva e rimuovi le suddivisioni",
+    "removed_one": "Questa modifica rimuoverà {{count}} suddivisione.",
+    "removed_many": "Questa modifica rimuoverà {{count}} suddivisioni.",
+    "removed_other": "Questa modifica rimuoverà {{count}} suddivisioni."
   }
 }

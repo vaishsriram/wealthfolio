@@ -12,7 +12,6 @@
     "more": "Mais"
   },
   "securities": {
-    "heading": "Valores mobiliários",
     "subtitle": "Explore e gerencie os ativos disponíveis na sua carteira.",
     "add_security": "Adicionar ativo",
     "delete_title": "Excluir ativo",
@@ -69,7 +68,7 @@
       "currency_required": "A moeda é obrigatória"
     },
     "instrumentType": {
-      "equity": "Renda variável (Ação, ETF, Fundo)",
+      "equity": "Renda variável (ação, ETF, fundo)",
       "crypto": "Criptomoeda",
       "bond": "Título",
       "option": "Opção",
@@ -308,7 +307,7 @@
     "data_provider_sheet_description": "Selecione o provedor de dados para este mapeamento de símbolo",
     "invalid_mappings_warning": "Alguns mapeamentos de símbolo não puderam ser validados. Os preços podem não ser atualizados para essas entradas.",
     "instrumentType": {
-      "equity": "Renda variável (Ação, ETF, Fundo)",
+      "equity": "Renda variável (ação, ETF, fundo)",
       "crypto": "Criptomoeda",
       "bond": "Título",
       "option": "Opção",
@@ -826,7 +825,9 @@
       "amount_exceeds_balance": "O reembolso não pode exceder o saldo atual.",
       "closure_date_invalid": "A data de encerramento deve estar entre a origem e hoje.",
       "required": "Obrigatório",
-      "first_payment_after_origination": "O primeiro pagamento deve ser após a data de originação."
+      "first_payment_after_origination": "O primeiro pagamento deve ser após a data de originação.",
+      "payment_positive": "O pagamento deve ser maior que 0.",
+      "term_too_long": "O prazo não pode passar de 100 anos."
     },
     "accelerated_biweekly": "Quinzenal acelerado",
     "first_payment_date": "Data do primeiro pagamento",

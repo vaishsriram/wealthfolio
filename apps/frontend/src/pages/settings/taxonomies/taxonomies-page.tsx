@@ -117,7 +117,7 @@ export default function TaxonomiesPage() {
               )
             }
           >
-            {t("settings:health_banner_clear")}
+            {t("common:clear")}
           </Button>
         </div>
       )}
@@ -187,15 +187,15 @@ export default function TaxonomiesPage() {
               )}
               <Button variant="outline" size="sm" onClick={handleExport}>
                 <Icons.Download className="me-2 h-4 w-4" />
-                {t("settings:tax_export")}
+                {t("common:export")}
               </Button>
             </div>
           </div>
 
           {/* Categories and details */}
-          <div className="min-h-125 flex flex-col lg:flex-row">
+          <div className="flex min-h-125 flex-col lg:flex-row">
             {/* Category tree */}
-            <div className="w-full border-b lg:w-80 lg:border-b-0 lg:border-e">
+            <div className="w-full border-b lg:w-80 lg:border-e lg:border-b-0">
               <ScrollArea className="h-75 lg:h-125">
                 {isLoadingCategories ? (
                   <div className="text-muted-foreground p-4 text-center text-sm">
