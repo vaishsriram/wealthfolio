@@ -1930,9 +1930,15 @@ impl ActivityService {
             .status
             .clone()
             .filter(|status| *status != existing.status);
+        // A voided counterpart counts toward nothing, so it leaves the review
+        // queue even when the primary was not in it.
         let review_transition = update
             .needs_review
-            .filter(|review| *review != existing.needs_review);
+            .filter(|review| *review != existing.needs_review)
+            .or_else(|| {
+                (status_transition == Some(ActivityStatus::Void) && counterpart.needs_review)
+                    .then_some(false)
+            });
         let counterpart_status = status_transition.or_else(|| {
             (review_transition == Some(false) && counterpart.status == ActivityStatus::Draft)
                 .then_some(ActivityStatus::Posted)
@@ -2584,9 +2590,15 @@ impl ActivityService {
             .status
             .clone()
             .filter(|status| *status != existing.status);
+        // A voided counterpart counts toward nothing, so it leaves the review
+        // queue even when the primary was not in it.
         let review_transition = update
             .needs_review
-            .filter(|review| *review != existing.needs_review);
+            .filter(|review| *review != existing.needs_review)
+            .or_else(|| {
+                (status_transition == Some(ActivityStatus::Void) && counterpart.needs_review)
+                    .then_some(false)
+            });
         // Approving a pair must also post a Draft counterpart, or its
         // lifecycle guard would reject clearing the review flag alone.
         let counterpart_status = status_transition.or_else(|| {
@@ -6185,6 +6197,45 @@ impl ActivityServiceTrait for ActivityService {
         );
         self.emit_asset_split_activities_changed(std::iter::once(&deleted));
 
+        Ok(deleted)
+    }
+
+    fn get_activity_deletion_ids(&self, activity_id: &str) -> Result<Vec<String>> {
+        let activity = self.activity_repository.get_activity(activity_id)?;
+        match activity.source_group_id {
+            Some(group_id) => Ok(self
+                .activity_repository
+                .get_activities_by_source_group_ids(&[group_id])?
+                .into_iter()
+                .map(|activity| activity.id)
+                .collect()),
+            None => Ok(vec![activity.id]),
+        }
+    }
+
+    async fn delete_activities_checked(&self, activity_ids: Vec<String>) -> Result<Vec<Activity>> {
+        let deleted = self
+            .activity_repository
+            .delete_activities_checked(activity_ids)
+            .await?;
+        let mut account_ids = HashSet::new();
+        let mut asset_ids = HashSet::new();
+        let mut currencies = HashSet::new();
+        for activity in &deleted {
+            Self::add_activity_to_event_sets(
+                activity,
+                &mut account_ids,
+                &mut asset_ids,
+                &mut currencies,
+            );
+        }
+        self.emit_activities_changed(
+            account_ids.into_iter().collect(),
+            asset_ids.into_iter().collect(),
+            currencies.into_iter().collect(),
+            Self::earliest_activity_at_utc(deleted.iter()),
+        );
+        self.emit_asset_split_activities_changed(deleted.iter());
         Ok(deleted)
     }
 
